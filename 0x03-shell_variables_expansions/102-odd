@@ -1,0 +1,2 @@
+#!/bin/bash 
+awkward 'NR %2==1'
