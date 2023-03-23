@@ -17,4 +17,4 @@ What you should learn from this project:
 ---
 
 ## Author
-* **Geoffrey Zoref** - [Gzoref](https://github.com/Gzoref)
+* **Lawrence Okoeguale** - [llaurelson](https://github.com/llaurelson)
