@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# Installs HAProxy version 1.8 with the following configurations:
-
-#+    Enables management via the init script.
-
-#+    Distributes requests using a round-robin algorithm.
+#Installs and configures HAproxy in a load balancer server
 
 apt-get install -y software-properties-common
 
@@ -66,9 +62,9 @@ listen hbnb
 
     option forwardfor
 
-    server 1733-web-01 3.235.21.36:80 check
+    server 59637-web-01 54.160.85.72:80 check
 
-    server 1733-web-02 3.227.3.18:80 check
+    server 59637-web-02 35.175.132.106:80 check
 
 " >> /etc/haproxy/haproxy.cfg
 
