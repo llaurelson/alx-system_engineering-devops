@@ -1,71 +1,97 @@
 #!/usr/bin/env bash
 
-#Installs and configures HAproxy in a load balancer server
+# install load balancer
 
-apt-get install -y software-properties-common
+# colors
 
-add-apt-repository -y ppa:vbernat/haproxy-1.8
+blue='\e[1;34m'
 
-apt-get update
+brown='\e[0;33m'
 
-apt-get install -y haproxy=1.8.\*
+green='\e[1;32m'
 
-echo "ENABLED=1" >> /etc/default/haproxy
+reset='\033[0m'
 
-mv /etc/haproxy/haproxy.cfg{,.original}
+echo -e "${blue}Updating and doing some minor checks...${reset}\n"
 
-touch /etc/haproxy/haproxy.cfg
+function install() {
 
-printf %s "global
+	command -v "$1" &> /dev/null
 
-    log 127.0.0.1 local0 notice
+	#shellcheck disable=SC2181
 
-    maxconn 2000
+	if [ $? -ne 0 ]; then
 
-    user haproxy
+		echo -e "	Installing: ${brown}$1${reset}\n"
 
-    group haproxy
+		sudo apt-get update -y -qq && \
+
+			sudo apt-get install -y "$1" -qq
+
+		echo -e "\n"
+
+	else
+
+		echo -e "	${green}${1} is already installed.${reset}\n"
+
+	fi
+
+}
+
+install haproxy #install haproxy
+
+echo -e "\n${blue}Setting up some minor stuff.${reset}\n"
+
+# backup default server config file
+
+sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+server_config=\
+
+"
 
 defaults
 
-    log     global
+  mode http
 
-    mode    http
+  timeout client 15s
 
-    option  httplog
+  timeout connect 10s
 
-    option  dontlognull
+  timeout server 15s
 
-    retries 3
+  timeout http-request 10s
 
-    option redispatch
+frontend th3gr00t-tech-frontend
 
-    timeout connect  5000
+    bind *:80
 
-    timeout client  10000
+    default_backend th3gr00t-tech-backend
 
-    timeout server  10000
-
-listen hbnb
-
-    bind 0.0.0.0:80
-
-    mode http
-
-    stats enable
-
-    stats uri /haproxy?stats
+backend th3gr00t-tech-backend
 
     balance roundrobin
 
-    option httpclose
+    server 453-web-01 35.243.128.200:80 check
 
-    option forwardfor
+    server 453-web-02 3.239.120.96:80 check
 
-    server 59637-web-01 54.160.85.72:80 check
+"
 
-    server 59637-web-02 35.175.132.106:80 check
+# shellcheck disable=SC2154
 
-" >> /etc/haproxy/haproxy.cfg
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
 
-service haproxy start
+# enable haproxy to be started by init script
+
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+
+if [ "$(pgrep -c haproxy)" -le 0 ]; then
+
+	sudo service haproxy start
+
+else
+
+	sudo service haproxy restart
+
+fi
