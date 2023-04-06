@@ -23,9 +23,9 @@ backend web
 
     balance roundrobin
 
-    server web-01 [STUDENT_ID]-web-01:80 check
+    server 118944-web-01 34.207.120.17:80 check
 
-    server web-02 [STUDENT_ID]-web-02:80 check
+    server 118944-web-02 18.209.179.25:80 check
 
 EOF
 
