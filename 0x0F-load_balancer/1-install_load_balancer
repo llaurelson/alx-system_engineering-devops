@@ -11,8 +11,8 @@ frontend http
 backend web
     mode http
     balance roundrobin
-    server web-01 118944-web-01:80 check
-    server web-02 118944-web-02:80 check
+    server 118944-web-01 34.207.120.17:80 check
+    server 118944-web-02 18.209.179.25:80 check
 EOF
 # Enable HAproxy management via init script
 sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
