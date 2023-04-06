@@ -1,44 +1,36 @@
 #!/usr/bin/env bash
 # sets up a new 404 error page
 sudo apt update
-
 sudo apt install nginx
+sudo nano /etc/nginx/sites-available/custom_404
 
-sudo nano /usr/share/nginx/html/404.html
+server {
 
-<!DOCTYPE html>
+    listen 80 default_server;
 
-<html>
+    listen [::]:80 default_server;
 
-<head>
+    root /var/www/html;
 
-	<title>404 Not Found</title></head>
+    index index.html;
 
-<body>
+    server_name _;
 
-	<h1>404 Not Found</h1>
+    error_page 404 /404.html;
 
-	<p>Ceci n\'est pas une page.</p>
-</body>
+    location = /404.html {
 
-</html>
+        internal;
 
+        return 404 "<html><body><h1>404 Not Found</h1><p>Ceci n'est pas une page.</p></body></html>";
 
-sudo nano /etc/nginx/sites-available/default
-
-
-sudo nginx -t
-
-error_page 404 /404.html;
-
-location = /404.html {
-
-    internal;
+    }
 
 }
+sudo unlink /etc/nginx/sites-enabled/default
+sudo ln -s /etc/nginx/sites-available/custom_404 /etc/nginx/sites-enabled/
 
 sudo nginx -t
-
 sudo /etc/init.d/nginx reload
 
 
