@@ -1,43 +1,5 @@
 #!/usr/bin/env bash
 # sets up a new 404 error page
-sudo apt update
-sudo apt install nginx
-sudo nano /etc/nginx/sites-available/custom_404
-
-server {
-
-    listen 80 default_server;
-
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-
-    index index.html;
-
-    server_name _;
-
-    error_page 404 /404.html;
-
-    location = /404.html {
-
-        internal;
-
-        return 404 "<html><body><h1>404 Not Found</h1><p>Ceci n'est pas une page.</p></body></html>";
-
-    }
-
-}
-sudo unlink /etc/nginx/sites-enabled/default
-sudo ln -s /etc/nginx/sites-available/custom_404 /etc/nginx/sites-enabled/
-
-sudo nginx -t
-sudo /etc/init.d/nginx reload
-
-
-
-"""
-#!/usr/bin/env bash
-# sets up a new 404 error page
 sudo apt-get update
 sudo apt-get install -y nginx 
 echo "Hello World!" > index.html
@@ -62,4 +24,3 @@ echo "server {
 }" > default
 sudo mv -f default /etc/nginx/sites-available/default
 sudo service nginx restart
-"""
