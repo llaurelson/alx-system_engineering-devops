@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
-#Configure your domain zone so that the subdomain www and display information about subdomains
+# Script that displays information about subdomains.
 
-if [ "$#" = 1 ]
-
-then
-    subdomains=("www" "lb-01" "web-01" "web-02")
-    for sub_domain in "${subdomains[@]}"
-    do
-	record_type=$(dig $sub_domain.$1 | grep -A1 'ANSWER SECTION' | tail -1 | awk '{print $4}')        destination=$(dig $sub_domain.$1 | grep -A1 'ANSWER SECTION' | tail -1 | awk '{print $5}')
-	echo "The subdomain $sub_domain is a $record_type record and points to $destination"
-    done
-elif [ "$#" = 2 ]
-then
-    record_type=$(dig $2.$1 | grep -A1 'ANSWER SECTION' | tail -1 | awk '{print $4}')
-    destination=$(dig $2.$1 | grep -A1 'ANSWER SECTION' | tail -1 | awk '{print $5}')
-    echo "The subdomain $2 is a $record_type record and points to $destination"
-fi
+DOMAIN=$1
+SUB_DOMAINS=('www' 'lb-01' 'web-01' 'web-02')
+custom_dig () {
+    if [[ $1 =~ [a-z] ]]; then
+        if [[ $2 =~ [a-z] ]]; then
+            SUB_DOMAINS=("$2")
+        fi
+        for SUB_DOMAIN in "${SUB_DOMAINS[@]}"; do
+            ANSWERLINE=$(dig "$SUB_DOMAIN"".""$DOMAIN" | grep -A1 'ANSWER SECTION:' | tail -n1 )
+            RECORD_TYPE=$(echo "$ANSWERLINE" | awk '{print $4}')
+            DESTINATION=$(echo "$ANSWERLINE" | awk '{print $5}')
+            ANSWER="The subdomain $SUB_DOMAIN is a $RECORD_TYPE record and points to $DESTINATION"
+            awk -v ANSWER="$ANSWER" 'BEGIN {print ANSWER}'
+        done
+    fi
+}
+custom_dig "$@"
