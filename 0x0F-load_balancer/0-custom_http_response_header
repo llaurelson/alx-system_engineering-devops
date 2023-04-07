@@ -5,7 +5,7 @@ apt update -y && apt upgrade -y
 apt install nginx -y
 
 # Index page
-echo "Holberton School" >/var/www/html/index.nginx-debian.html
+echo "Hello World!" >/var/www/html/index.nginx-debian.html
 
 # Redirect to fabulous Rick Astley page
 sed -i '/listen \[::\]:80 default_server;/a\        rewrite ^\/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;' /etc/nginx/sites-available/default
