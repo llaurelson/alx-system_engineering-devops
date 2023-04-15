@@ -1,19 +1,6 @@
 #!/usr/bin/env bash
-# Script that setup a nginx web server on our server, redirection, 404, header
-
-apt update -y && apt upgrade -y
-apt install nginx -y
-
-# Index page
-echo "Hello World!" >/var/www/html/index.nginx-debian.html
-
-# Redirect to fabulous Rick Astley page
-sed -i '/listen \[::\]:80 default_server;/a\        rewrite ^\/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;' /etc/nginx/sites-available/default
-
-# 404 Page not Found
-curl https://pastebin.com/raw/szLjiB9Q >/var/www/html/404.html
-sed -i '/dQw4w9WgXcQ permanent;$/a\        error_page 404 /404.html;' /etc/nginx/sites-available/default
-
-# Served header
-sed -i "/404 \/404.html;$/a\        add_header X-Served-By $(hostname);" /etc/nginx/sites-available/default
+# Configure new nginx server to have a custom header
+apt-get -y update
+apt-get install -y nginx
+sed -i '11i\add_header X-Served-By $HOSTNAME;' /etc/nginx/nginx.conf
 service nginx restart
