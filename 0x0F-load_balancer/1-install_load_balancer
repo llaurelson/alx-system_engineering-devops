@@ -2,23 +2,10 @@
 # configures a new HAproxy as a load balancer
 
 # Install HAproxy on a server
-apt-get install -y software-properties-common
-add-apt-repository -y ppa:vbernat/haproxy-1.8
-apt-get -y update
-apt-get install -y haproxy=1.8.\*
-
-# Configure haproxy configuration file to distribute requests using a roundrobin algorithm
-echo '
-frontend ahuosesolutions.tech
-        bind 0:80
-        default_backend web_servers
-backend web_servers
-        balance roundrobin
-        option httpclose
-        option forwardfor
-        server 118944-web-01 34.207.120.17:80
-        server 118944-web-02 18.209.179.25:80
-' >> /etc/haproxy/haproxy.cfg
-
-# Restart HAproxy service
-service haproxy restart
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
+sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.original
+sudo sed -i "$ a\listen 118944-lb-01\n\tbind *:80\n\tmode http\n\tbalance roundrobin\n\toption httpclose\n\toption forwardfor\n\tserver 118944-web-02 18.209.179.25:80 check\n\tserver 118944-web-01 34.207.120.17:80 check" /etc/haproxy/haproxy.cfg
+sudo service haproxy start
